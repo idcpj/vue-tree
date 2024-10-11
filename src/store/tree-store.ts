@@ -1271,6 +1271,7 @@ export default class TreeStore extends TreeEventTarget {
    * @param node 需要勾选的节点
    */
   private checkParentNode(node: TreeNode): void {
+    if(!this.options.cascade) return
     const length = node.children.length
     if (!length) return
     let hasChecked = false
