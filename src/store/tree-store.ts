@@ -366,13 +366,13 @@ export default class TreeStore extends TreeEventTarget {
    * @param triggerEvent 是否触发事件
    * @param triggerDataChange 是否触发 `data-change` 事件以通知外部刷新视图
    */
-  setExpand(
+  async setExpand(
     key: TreeNodeKeyType,
     value: boolean,
     expandParent: boolean = false,
     triggerEvent: boolean = true,
     triggerDataChange: boolean = true
-  ): void {
+  ): Promise<void> {
     const node = this.mapData[key]
     if (!node || (!expandParent && node.isLeaf)) return
 
@@ -386,7 +386,7 @@ export default class TreeStore extends TreeEventTarget {
           if (triggerDataChange) {
             this.emit('visible-data-change')
           }
-          new Promise((resolve, reject) => {
+          await new Promise((resolve, reject) => {
             const load = this.options.load as Function
             load(node, resolve, reject)
           })
@@ -446,7 +446,7 @@ export default class TreeStore extends TreeEventTarget {
     }
 
     if (expandParent && node._parent && value) {
-      this.setExpand(
+      await this.setExpand(
         node._parent[this.options.keyField],
         value,
         expandParent,
@@ -461,14 +461,15 @@ export default class TreeStore extends TreeEventTarget {
    * @param keys 展开的节点 key 数组
    * @param value 是否展开
    */
-  setExpandKeys(
+  async setExpandKeys(
     keys: TreeNodeKeyType[],
     value: boolean,
     triggerDataChange: boolean = true
-  ): void {
-    keys.forEach(key => {
-      this.setExpand(key, value, false, false, false)
-    })
+  ): Promise<void> {
+
+    for (const key of keys) {
+      await this.setExpand(key, value, false, false, false)
+    }
 
     if (triggerDataChange) {
       this.emit('visible-data-change')
