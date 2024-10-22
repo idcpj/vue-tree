@@ -5,7 +5,7 @@ import { ITreeNodeOptions } from "../store/tree-node"
 import { FilterFunctionType } from "../store/tree-store"
 import { TreeProps } from "../components/Tree.vue"
 
-type IUsePublicTreeAPIProps = Required<Pick<TreeProps, 
+type IUsePublicTreeAPIProps = Required<Pick<TreeProps,
   'selectable' |
   'checkable' |
   'separator' |
@@ -82,8 +82,8 @@ export const usePublicTreeAPI = (
     key: TreeNodeKeyType,
     value: boolean,
     expandParent: boolean = true
-  ): void {
-    nonReactive.store.setExpand(key, value, expandParent)
+  ): Promise<void> {
+    return nonReactive.store.setExpand(key, value, expandParent)
   }
   function setExpandKeys(keys: TreeNodeKeyType[], value: boolean): void {
     nonReactive.store.setExpandKeys(keys, value)
