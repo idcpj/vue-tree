@@ -220,10 +220,10 @@ export interface TreeProps {
 
   /** 渲染节点数量，可见节点数大于此值且高度超过(容器可视高度能容纳节点数 + bufferNodeAmount)则不会渲染所有可见节点 */
   renderNodeAmount?: number,
-  
+
   /** 根据节点最小高度计算数据总高度 */
   nodeMinHeight?: number,
-  
+
   /** 当滚动到视野外的节点个数大于此值时刷新渲染节点 */
   bufferNodeAmount?: number,
 }
@@ -288,6 +288,7 @@ import { usePublicTreeAPI } from '../hooks/usePublicTreeAPI'
 import { FilterFunctionType } from '../store/tree-store'
 import { pickReadonly } from '../utils'
 import { useExpandAnimation } from '../hooks/useExpandAnimation'
+import {ArgumentsType} from "vitest";
 
 const props = withDefaults(defineProps<TreeProps>(), DEFAULT_TREE_PROPS)
 
@@ -677,6 +678,17 @@ const treeNodePropKeys = [
 
 const treeNodeProps = reactive(pickReadonly(toRefs(props), ...treeNodePropKeys))
 
+const setExpandExpose = (...args: ArgumentsType<typeof setExpand>) => {
+  if (props.animation) {
+    const node = getNode(args[0]);
+    if(node) {
+      expandAnimation.updateBeforeExpand(node)
+    }
+  }
+
+  setExpand(...args)
+}
+
 defineExpose({
   setData,
   setChecked,
@@ -685,7 +697,7 @@ defineExpose({
   clearChecked,
   setSelected,
   clearSelected,
-  setExpand,
+  setExpand: setExpandExpose,
   setExpandKeys,
   setExpandAll,
   getCheckedNodes,
